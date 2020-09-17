@@ -15,7 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from boards import views
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('login/', TokenObtainPairView.as_view(), name='login'),
+    path('register/', views.Register.as_view(), name='register'),
+    path('create/',views.CreateBoard.as_view(), name='create-board'),
+    path('boards/',views.BoardsList.as_view(), name='boards-list'),
+    path('boards/<int:board_id>/tasks/',views.TaskList.as_view(), name='tasks-list'),
+    path('boards/<int:board_id>/add_task/',views.AddTask.as_view(), name='add-task'),
+    path('boards/<int:task_id>/update/',views.UpdateTask.as_view(), name='update-task'),
+
 ]
