@@ -26,17 +26,25 @@ class BoardsList(ListAPIView):
 	# search_fields = ['name','description']
 
 class TaskList(ListAPIView):
-	queryset = Task.objects.all()
 	serializer_class = TaskSerializer
 	permission_classes = [IsTaskOwner]
 	lookup_field = 'id'
 	lookup_url_kwargs = 'board_id'
-	filter_backends = [SearchFilter, OrderingFilter]
-	search_fields = ['name','description']
+	filter_backends = [OrderingFilter]
+	ordering_fields = ['creation_date', 'is_hidden','is_done']
+	ordering = ['creation_date']
+
+	def get_queryset(self):
+		if IsBoardOwner:
+			queryset = Task.objects.all()
+			return queryset
+		else:
+			queryset = Task.objects.filter(is_hidden=False)
+			return queryset
 
 class AddTask(CreateAPIView):
 	serializer_class = TaskSerializer
-	permission_classes = [IsTaskOwner]
+	permission_classes = [IsBoardOwner]
 	# lookup_field = 'id'
 	# lookup_url_kwargs = 'board_id'
 
