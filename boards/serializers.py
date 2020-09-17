@@ -21,6 +21,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         new_user.save()
         return validated_data
 
+
+
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
