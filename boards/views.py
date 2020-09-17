@@ -20,7 +20,7 @@ class CreateBoard(CreateAPIView):
 
 class BoardsList(ListAPIView):
 	queryset = Board.objects.all()
-	permission_classes = [IsAuthenticated]
+	# permission_classes = [IsAuthenticated]
 	serializer_class = BoardSerializer
 	# filter_backends = [SearchFilter, OrderingFilter]
 	# search_fields = ['name','description']
