@@ -1,18 +1,17 @@
 from django.shortcuts import render
-from .serializers import RegisterSerializer, BoardSerializer, TaskSerializer, UpdateTaskSerializer
+from .serializers import RegisterSerializer, FullBoardSerializer, TaskSerializer, UpdateTaskSerializer
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsTaskOwner,IsBoardOwner
+from .permissions import IsOwnerOrReadOnly,IsBoardOwnerOrReadOnly
 from .models import Board,Task
-from rest_framework.filters import SearchFilter,OrderingFilter
-
+from rest_framework.filters import OrderingFilter
 
 
 class Register(CreateAPIView):
 	serializer_class = RegisterSerializer
 
 class CreateBoard(CreateAPIView):
-	serializer_class = BoardSerializer
+	serializer_class = FullBoardSerializer
 	permission_classes = [IsAuthenticated]
 
 	def perform_create(self, serializer):
@@ -20,33 +19,13 @@ class CreateBoard(CreateAPIView):
 
 class BoardsList(ListAPIView):
 	queryset = Board.objects.all()
-	# permission_classes = [IsAuthenticated]
-	serializer_class = BoardSerializer
-	# filter_backends = [SearchFilter, OrderingFilter]
-	# search_fields = ['name','description']
-
-class TaskList(ListAPIView):
-	serializer_class = TaskSerializer
-	permission_classes = [IsTaskOwner]
-	lookup_field = 'id'
-	lookup_url_kwargs = 'board_id'
+	serializer_class = FullBoardSerializer
 	filter_backends = [OrderingFilter]
-	ordering_fields = ['creation_date', 'is_hidden','is_done']
-	ordering = ['creation_date']
-
-	def get_queryset(self):
-		if IsBoardOwner:
-			queryset = Task.objects.all()
-			return queryset
-		else:
-			queryset = Task.objects.filter(is_hidden=False)
-			return queryset
+	ordering_fields = ['creation_date']
 
 class AddTask(CreateAPIView):
 	serializer_class = TaskSerializer
-	permission_classes = [IsBoardOwner]
-	# lookup_field = 'id'
-	# lookup_url_kwargs = 'board_id'
+	permission_classes = [IsOwnerOrReadOnly]
 
 	def perform_create(self,serializer):
 		serializer.save(board_id=self.kwargs['board_id'])
@@ -56,17 +35,16 @@ class UpdateTask(RetrieveUpdateAPIView):
 	queryset = Task.objects.all()
 	serializer_class = UpdateTaskSerializer
 	lookup_field = 'id'
-	permission_classes = [IsTaskOwner]
+	permission_classes = [IsOwnerOrReadOnly]
 
 
 class DeleteBoard(DestroyAPIView):
 	queryset = Board.objects.all()
 	lookup_field = 'id'
-	lookup_url_kwarg = 'board_id'
-	permission_classes=[IsBoardOwner]
+	permission_classes=[IsBoardOwnerOrReadOnly]
 
 
 class DeleteTask(DestroyAPIView):
 	queryset = Task.objects.all()
 	lookup_field = 'id'
-	permission_classes=[IsTaskOwner]
+	permission_classes=[IsOwnerOrReadOnly]

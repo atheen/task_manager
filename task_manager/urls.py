@@ -28,10 +28,9 @@ urlpatterns = [
     path('register/', views.Register.as_view(), name='register'),
     path('create/',views.CreateBoard.as_view(), name='create-board'),
     path('boards/',views.BoardsList.as_view(), name='boards-list'),
-    path('boards/<int:board_id>/tasks/',views.TaskList.as_view(), name='tasks-list'),
     path('boards/<int:board_id>/add_task/',views.AddTask.as_view(), name='add-task'),
     path('boards/<int:id>/update/',views.UpdateTask.as_view(), name='update-task'),
-    path('boards/<int:board_id>/delete/', views.DeleteBoard.as_view(), name="delete-board"),
+    path('boards/<int:id>/delete/', views.DeleteBoard.as_view(), name="delete-board"),
     path('boards/task/<int:id>/delete/', views.DeleteTask.as_view(), name="delete-task"),
 
 ]

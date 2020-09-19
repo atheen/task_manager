@@ -1,22 +1,14 @@
-from rest_framework.permissions import BasePermission
+from rest_framework import permissions
 
 
-class IsBoardOwner(BasePermission):
+class IsBoardOwnerOrReadOnly(permissions.BasePermission):
     message = "This isn't your board....."
 
     def has_object_permission(self, request, view, obj):
-        if obj.owner == request.user:
-            return True
-        else:
-            return False
+        return obj.owner == request.user
 
-
-
-class IsTaskOwner(BasePermission):
+class IsOwnerOrReadOnly(permissions.BasePermission):
     message = "This isn't your board....."
 
     def has_object_permission(self, request, view, obj):
-        if obj.board.owner == request.user:
-            return True
-        else:
-            return False
+        return obj.board.owner == request.user

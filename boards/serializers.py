@@ -21,18 +21,29 @@ class RegisterSerializer(serializers.ModelSerializer):
         new_user.save()
         return validated_data
 
-
-
-class BoardSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Board
-        fields = ['title', 'owner']
-
-
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['description', 'is_hidden', 'is_done']
+
+class FullBoardSerializer(serializers.ModelSerializer):
+    done_tasks = serializers.SerializerMethodField()
+    not_done_tasks = serializers.SerializerMethodField()
+    class Meta:
+        model = Board
+        fields = ['title', 'owner','done_tasks','not_done_tasks']
+    def get_done_tasks(self,obj):
+        if obj.owner == self.context['request'].user:
+            tasks = Task.objects.filter(board=obj,is_done=True)
+        else:
+            tasks = Task.objects.filter(board=obj,is_hidden=False,is_done=True)
+        return TaskSerializer(tasks,many=True).data
+    def get_not_done_tasks(self,obj):
+        if obj.owner == self.context['request'].user:
+            tasks = Task.objects.filter(board=obj,is_done=False)
+        else:
+            tasks = Task.objects.filter(board=obj,is_hidden=False,is_done=False)
+        return TaskSerializer(tasks,many=True).data
 
 class UpdateTaskSerializer(serializers.ModelSerializer):
     class Meta:
