@@ -20,8 +20,6 @@ class CreateBoard(CreateAPIView):
 class BoardsList(ListAPIView):
 	queryset = Board.objects.all()
 	serializer_class = BoardSerializer
-	filter_backends = [OrderingFilter]
-	ordering_fields = ['creation_date']
 
 class AddTask(CreateAPIView):
 	serializer_class = TaskSerializer

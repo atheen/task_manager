@@ -13,3 +13,6 @@ class Task(models.Model):
 	is_hidden = models.BooleanField()
 	is_done = models.BooleanField()
 	board = models.ForeignKey(Board, on_delete=models.CASCADE)
+
+	class Meta:
+		ordering = 'creation_date'
